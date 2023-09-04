@@ -7,12 +7,22 @@ app.get("/", (req, res) => {
   res.send("Server runnning.");
 });
 
-app.get("/strobbo-clock", (req, res) => {
-  console.log("Headers: ", req.headers);
-  const authorization = req.headers["authorization"]?.toLowerCase() ?? ""; // eg "kiosk 1234"
+app.get("/strobbo-clock/:tenant", (req, res) => {
+  // Example: authorization: Kiosk 1234
+  const authorization = req.headers["authorization"]?.toLowerCase() ?? "";
+  const tenant = req.params.tenant;
+
+  if (!tenant) {
+    console.error("No tenant found.");
+  }
+
+  if (!authorization) {
+    console.warn("No authorization header found.");
+  }
+
   const PIN = authorization.replace("kiosk ", "");
 
-  const baseUrl = "https://onlinewerkrooster.github.io/strobbo-clock/dev_otomat";
+  const baseUrl = `https://onlinewerkrooster.github.io/strobbo-clock/${tenant}`;
 
   const url = PIN ? `${baseUrl}?pin=${PIN}` : baseUrl;
 
